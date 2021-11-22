@@ -3,6 +3,7 @@
 import os, pandas as pd
 import subprocess
 import re
+import datetime
 
 def list_files(path, ext):
     paths = []
@@ -47,12 +48,11 @@ heic_dict = {'path': heics[0],'bitrate (kbps)': heics[1],'framerate': heics[2],'
 heic_df = pd.DataFrame(heic_dict)
 #heic_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_heic.csv')
 
-
-
 #concatenate dataframes, reindex new video list
 video_list = pd.concat([mp4_df,mov_df,heic_df], ignore_index=True)
 
-
+#initialize empty dataframe to log changes
+change_log = {'path':[],'datetime':[],'oldsize (Kbs)':[], 'newsize (Kbs)':[]}
 
 #define parameters
 bitrate = "5M"
@@ -80,3 +80,17 @@ for index,row in video_list.iterrows():
         elif os.path.isfile(new_vid_path) == False:
             os.rename(temp_file, new_vid_path)
             print 'new file written: ' + new_vid_path
+    
+        #write change log information
+        change_log['path'].append(new_vid_path)
+        change_log['datetime'].append(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        change_log['oldsize (Kbs)'].append(video_list.iloc[index]['Size (Kbs)'])
+        change_log['newsize (Kbs)'].append((os.stat(new_vid_path).st_size)/1024)
+
+#write changelog 
+change_log_df = pd.DataFrame(change_log)
+change_log_file = "change_log_" + datetime.datetime.now().strftime("%Y-%m-%d") + ".csv"
+#test folder
+#change_log_df.to_csv('C:\\Users\\brian.cruice\\Desktop\\' + change_log_file)
+#running folder
+change_log_df.to_csv('\\\\pwdoows\\OOWS\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression\\' + change_log_file)

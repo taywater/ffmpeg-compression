@@ -33,17 +33,20 @@ def list_files(path, ext):
     return(paths, bitrates,framerates,sizes)
 
 
-mp4s = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos\\script test", "mp4")
+#mp4s = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos\\script test", "mp4")
+mp4s = list_files("\\\\pwdoows\\OOWS\\Watershed Sciences\\GSI Monitoring","mp4")
 mp4_dict = {'path': mp4s[0],'bitrate (kbps)': mp4s[1],'framerate': mp4s[2],'Size (Kbs)': mp4s[3]}
 mp4_df = pd.DataFrame(mp4_dict)
 #mp4_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_mp4.csv')
 
-movs = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos\\script test", "mov")
+#movs = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos\\script test", "mov")
+movs = list_files("\\\\pwdoows\\OOWS\\Watershed Sciences\\GSI Monitoring", "mov")
 mov_dict = {'path': movs[0],'bitrate (kbps)': movs[1],'framerate': movs[2],'Size (Kbs)': movs[3]}
 mov_df = pd.DataFrame(mov_dict)
 #mov_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_mov.csv')
 
-heics = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos\\script test", "heic")
+#heics = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos\\script test", "heic")
+heics = list_files("\\\\pwdoows\\OOWS\\Watershed Sciences\\GSI Monitoring","heic")
 heic_dict = {'path': heics[0],'bitrate (kbps)': heics[1],'framerate': heics[2],'Size (Kbs)': heics[3]}
 heic_df = pd.DataFrame(heic_dict)
 #heic_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_heic.csv')
@@ -67,7 +70,8 @@ temp_file = "C:\\Users\\brian.cruice\\Desktop\\test videos\\script test\\temp_vi
 for index,row in video_list.iterrows():
     #check metadata, evaluate if the video passes check
     vid_path = video_list.iloc[index]['path']
-    new_vid_path = os.path.splitext(vid_path)[0] + "_compressed" + vid_format
+    #new_vid_path = os.path.splitext(vid_path)[0] + "_compressed" + vid_format
+    new_vid_path = os.path.splitext(vid_path)[0] + vid_format
     #if((eval(video_list['framerate'][index])) | (video_list['bitrate (kbps)'][index] > 5100)):
     if video_list['bitrate (kbps)'][index] > 5100:
         command_prompt = 'ffmpeg -y -i "' + vid_path + '" -b:v ' \

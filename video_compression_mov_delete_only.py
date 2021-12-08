@@ -33,29 +33,31 @@ def list_files(path, ext):
     return(paths, bitrates,framerates,sizes)
 
 
-mp4s = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "mp4")
-#mp4s = list_files("M:","mp4")
-mp4_dict = {'path': mp4s[0],'bitrate (kbps)': mp4s[1],'framerate': mp4s[2],'Size (Kbs)': mp4s[3]}
-mp4_df = pd.DataFrame(mp4_dict)
-#mp4_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_mp4.csv')
+# mp4s = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "mp4")
+# #mp4s = list_files("M:","mp4")
+# mp4_dict = {'path': mp4s[0],'bitrate (kbps)': mp4s[1],'framerate': mp4s[2],'Size (Kbs)': mp4s[3]}
+# mp4_df = pd.DataFrame(mp4_dict)
+# #mp4_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_mp4.csv')
 
-movs = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "mov")
-#movs = list_files("M:", "mov")
+# movs = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "mov")
+movs = list_files("M:", "mov")
 mov_dict = {'path': movs[0],'bitrate (kbps)': movs[1],'framerate': movs[2],'Size (Kbs)': movs[3]}
 mov_df = pd.DataFrame(mov_dict)
 #mov_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_mov.csv')
 
-heics = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "heic")
-#heics = list_files("M:","heic")
-heic_dict = {'path': heics[0],'bitrate (kbps)': heics[1],'framerate': heics[2],'Size (Kbs)': heics[3]}
-heic_df = pd.DataFrame(heic_dict)
-#heic_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_heic.csv')
+# heics = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "heic")
+# #heics = list_files("M:","heic")
+# heic_dict = {'path': heics[0],'bitrate (kbps)': heics[1],'framerate': heics[2],'Size (Kbs)': heics[3]}
+# heic_df = pd.DataFrame(heic_dict)
+# #heic_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_heic.csv')
 
 #concatenate dataframes, reindex new video list
-video_list = pd.concat([mp4_df,mov_df,heic_df], ignore_index=True)
+# video_list = pd.concat([mp4_df,mov_df,heic_df], ignore_index=True)
+video_list = pd.concat([mov_df], ignore_index=True)
+
 
 #initialize empty dataframe to log changes
-change_log = {'path':[],'datetime':[],'oldsize (Kbs)':[], 'newsize (Kbs)':[]}
+change_log = {'path':[],'oldpath':[],'datetime':[],'oldsize (Kbs)':[], 'newsize (Kbs)':[]}
 
 #define parameters
 bitrate = "5M"
@@ -74,21 +76,23 @@ for index,row in video_list.iterrows():
     new_vid_path = os.path.splitext(vid_path)[0] + vid_format
     #if((eval(video_list['framerate'][index])) | (video_list['bitrate (kbps)'][index] > 5100)):
     if video_list['bitrate (kbps)'][index] > 5100:
-        command_prompt = 'ffmpeg -y -i "' + vid_path + '" -b:v ' \
-            + bitrate + ' "' + temp_file + '"'
-        os.system(command_prompt)
         if os.path.isfile(new_vid_path) == True:
-            os.remove(new_vid_path)
+            os.remove(vid_path)
+            # print 'new file written: ' + new_vid_path
+            print 'old file removed: ' + vid_path
+        elif os.path.isfile(new_vid_path) == False:
+            command_prompt = 'ffmpeg -y -i "' + vid_path + '" -b:v ' \
+            + bitrate + ' "' + temp_file + '"'
+            os.system(command_prompt)
+            os.remove(vid_path)
             os.rename(temp_file, new_vid_path)
             print 'file written over: ' + new_vid_path
-        elif os.path.isfile(new_vid_path) == False:
-            os.rename(temp_file, new_vid_path)
-            os.remove(vid_path)
-            print 'new file written: ' + new_vid_path
-            print 'old file removed: ' + vid_path
+
+
     
         #write change log information
         change_log['path'].append(new_vid_path)
+        change_log['oldpath'].append(vid_path)
         change_log['datetime'].append(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         change_log['oldsize (Kbs)'].append(video_list.iloc[index]['Size (Kbs)'])
         change_log['newsize (Kbs)'].append((os.stat(new_vid_path).st_size)/1024)

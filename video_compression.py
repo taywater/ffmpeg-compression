@@ -33,23 +33,27 @@ def list_files(path, ext):
     return(paths, bitrates,framerates,sizes)
 
 
-mp4s = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "mp4")
-#mp4s = list_files("M:","mp4")
+#create virtual drive to save string space
+virt_drv_cmd = 'subst M: "\\\\pwdoows\\OOWS\\Watershed Sciences\\GSI Monitoring"'
+os.popen(virt_drv_cmd)
+
+#mp4s = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "mp4")
+mp4s = list_files("M:","mp4")
 mp4_dict = {'path': mp4s[0],'bitrate (kbps)': mp4s[1],'framerate': mp4s[2],'Size (Kbs)': mp4s[3]}
 mp4_df = pd.DataFrame(mp4_dict)
-#mp4_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_mp4.csv')
+mp4_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_mp4.csv')
 
-movs = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "mov")
-#movs = list_files("M:", "mov")
+#movs = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "mov")
+movs = list_files("M:", "mov")
 mov_dict = {'path': movs[0],'bitrate (kbps)': movs[1],'framerate': movs[2],'Size (Kbs)': movs[3]}
 mov_df = pd.DataFrame(mov_dict)
-#mov_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_mov.csv')
+mov_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_mov.csv')
 
-heics = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "heic")
-#heics = list_files("M:","heic")
+#heics = list_files("C:\\Users\\brian.cruice\\Desktop\\test videos", "heic")
+heics = list_files("M:","heic")
 heic_dict = {'path': heics[0],'bitrate (kbps)': heics[1],'framerate': heics[2],'Size (Kbs)': heics[3]}
 heic_df = pd.DataFrame(heic_dict)
-#heic_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_heic.csv')
+heic_df.to_csv('O:\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression Comparison\\server_heic.csv')
 
 #concatenate dataframes, reindex new video list
 video_list = pd.concat([mp4_df,mov_df,heic_df], ignore_index=True)
@@ -100,3 +104,8 @@ change_log_file = "change_log_" + datetime.datetime.now().strftime("%Y-%m-%d") +
 #change_log_df.to_csv('C:\\Users\\brian.cruice\\Desktop\\' + change_log_file)
 #running folder
 change_log_df.to_csv('\\\\pwdoows\\OOWS\\Watershed Sciences\\GSI Monitoring\\01 Admin\\08 Databases and Digital Resources\\01 Good Housekeeping\\Video Compression\\' + change_log_file)
+
+
+#remove virtual drive at the end of the game
+rmv_virt_drv_cmd = 'subst M: /d'
+os.popen(rmv_virt_drv_cmd).read()
